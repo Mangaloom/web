@@ -21,7 +21,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const comics = await getAllComicsForSitemap();
   const comicRoutes: MetadataRoute.Sitemap = comics.map((comic) => ({
-    url: `${siteUrl}/komik/${comic.href}`,
+    url: `${siteUrl}/komik${comic.href}`,
     lastModified: new Date(comic.updatedAt),
     changeFrequency: "weekly",
     priority: 0.7,
