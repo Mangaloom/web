@@ -8,6 +8,8 @@ import {
   IoPlayBackOutline,
 } from "react-icons/io5";
 
+export const runtime = "edge";
+
 export async function generateMetadata({
   params,
 }: {

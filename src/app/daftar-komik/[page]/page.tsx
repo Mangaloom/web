@@ -6,6 +6,8 @@ import { IoCaretBackOutline } from "react-icons/io5";
 import { redirect } from "next/navigation";
 import { Metadata } from "next";
 
+export const runtime = "edge";
+
 export async function generateMetadata({
   params,
 }: {
