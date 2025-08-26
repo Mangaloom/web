@@ -77,14 +77,13 @@ export interface ChapterDetail {
 
 export const getNewestComics = async () => {
   const data = await fetcher<ComicList>("/comics/newest");
-
-  return data.comics;
+  return data.comics.slice(0, 12);
 };
 
 export const getRecommenderComics = async () => {
   const data = await fetcher<RecommenderResponse>("/recommended");
 
-  return data.data;
+  return data.data.slice(0, 6);
 };
 
 export const getPopularComics = async () => {

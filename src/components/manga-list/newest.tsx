@@ -28,8 +28,8 @@ export default async function NewestComics() {
           gap-4
         "
       >
-        {newestManga.map((manga) => (
-          <CardList key={manga.href} {...manga} />
+        {newestManga.map((manga, i) => (
+          <CardList key={manga.href} {...manga} priority={i < 6} />
         ))}
       </div>
     </section>

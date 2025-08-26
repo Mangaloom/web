@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import React from "react";
+import Image from "next/image";
 
 type PopularItemProps = {
   rank: number;
@@ -9,6 +10,7 @@ type PopularItemProps = {
   thumbnail: string;
   year: string;
   genre: string;
+  priority?: boolean;
 };
 
 export function PopularItem({
@@ -18,6 +20,7 @@ export function PopularItem({
   thumbnail,
   year,
   genre,
+  priority = false,
 }: PopularItemProps) {
   const rankColors: { [key: number]: string } = {
     1: "bg-yellow-500 text-white", // Gold
@@ -33,9 +36,14 @@ export function PopularItem({
       {/* Container for Thumbnail and Rank */}
       <div className="relative flex-shrink-0 w-12">
         {/* Thumbnail Image */}
-        <img
+        <Image
           src={thumbnail}
           alt={title}
+          width={48}
+          height={64}
+          sizes="48px"
+          loading="eager"
+          priority={priority}
           className="w-12 h-16 object-cover rounded"
         />
         {/* Rank Badge */}

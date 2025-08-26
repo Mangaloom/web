@@ -9,9 +9,9 @@ export const runtime = "edge";
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ href: string }>;
+  params: { href: string };
 }): Promise<Metadata> {
-  const { href } = await params;
+  const { href } = params;
   const detailComic = await getDetailComic(href);
 
   if (!detailComic) {
@@ -24,7 +24,7 @@ export async function generateMetadata({
   return {
     title: `${detailComic.title} (${detailComic.altTitle}) | Baca Komik Online`,
     description:
-      detailComic.description?.slice(0, 160) ||
+      detailComic.description ||
       `Baca komik ${detailComic.title} dengan genre ${detailComic.genre
         .map((g) => g.title)
         .join(", ")} secara gratis.`,
@@ -67,9 +67,9 @@ export async function generateMetadata({
 export default async function DetailComic({
   params,
 }: {
-  params: Promise<{ href: string }>;
+  params: { href: string };
 }) {
-  const { href } = await params;
+  const { href } = params;
   const detailComic = await getDetailComic(href);
 
   const infoList = [
@@ -87,6 +87,22 @@ export default async function DetailComic({
       </div>
     );
   }
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ComicSeries",
+    name: detailComic.title,
+    alternateName: detailComic.altTitle,
+    description:
+      detailComic.description || `Baca komik ${detailComic.title} gratis.`,
+    author: {
+      "@type": "Person",
+      name: detailComic.author,
+    },
+    genre: detailComic.genre.map((g) => g.title),
+    image: detailComic.thumbnail,
+    url: `https://mangaloom.app/komik/${href}`,
+  };
 
   return (
     <div className="container mx-auto p-4 text-white">
@@ -118,24 +134,22 @@ export default async function DetailComic({
           </div>
 
           <div className="mt-4 border-t border-b border-gray-700 py-4">
-            <div className="space-y-2 text-sm">
-              {infoList.map((item, idx) => (
-                <div key={idx} className="flex">
-                  <span className="w-24 text-gray-400 font-medium">
+            <dl className="space-y-2 text-sm">
+              {infoList.map((item) => (
+                <div key={item.label} className="flex">
+                  <dt className="w-24 text-gray-400 font-medium">
                     {item.label}
-                  </span>
-                  <span className="text-white">{item.value}</span>
+                  </dt>
+                  <dd className="text-white">{item.value}</dd>
                 </div>
               ))}
-
-              {/* Khusus rating biar ada komponen */}
               <div className="flex items-center">
-                <span className="w-24 text-gray-400 font-medium">Rating</span>
-                <div className="flex items-center">
+                <dt className="w-24 text-gray-400 font-medium">Rating</dt>
+                <dd className="flex items-center">
                   <RatingComic rating={detailComic.rating} size={16} />
-                </div>
+                </dd>
               </div>
-            </div>
+            </dl>
           </div>
 
           <div className="mt-4">
@@ -148,21 +162,21 @@ export default async function DetailComic({
           {/* tambahkan dibawah sini copy writing dinamik agar meningkatkan seo */}
           <div className="mt-10">
             <p className="text-gray-400 text-sm leading-relaxed">
-              Temukan petualangan seru dan kisah menarik dalam komik{" "}
-              <span className="font-semibold text-primary text-base">
-                {detailComic.title}
-              </span>
-              . Dengan genre {detailComic.genre.map((g) => g.title).join(", ")},
-              komik ini menawarkan cerita yang memikat dan karakter yang
-              berkesan. Jangan lewatkan update chapter terbaru setiap minggu dan
-              nikmati pengalaman membaca komik online secara gratis di situs
+              Baca komik <strong>{detailComic.title}</strong> secara online dan
+              gratis hanya di Mangaloom. Sebagai salah satu komik dengan genre{" "}
+              {detailComic.genre.map((g) => g.title).join(", ")}, cerita ini
+              menawarkan alur yang menegangkan dan visual yang memukau. Jangan
+              lewatkan update chapter terbaru dari manga{" "}
+              <strong>{detailComic.title}</strong> dan ikuti terus
+              perkembangannya di situs{" "}
               <Link
                 href="https://mangaloom.app"
-                className="font-semibold text-primary text-base"
+                className="text-primary hover:underline"
               >
-                {" "}
                 Mangaloom
               </Link>
+              . Temukan juga berbagai rekomendasi komik lainnya yang tak kalah
+              menarik di platform kami.
             </p>
           </div>
         </div>

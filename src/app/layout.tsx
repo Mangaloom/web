@@ -134,6 +134,8 @@ export default function RootLayout({
   return (
     <SWRProvider>
       <html lang="id">
+        <link rel="preconnect" href="https://flagcdn.com" />
+        <link rel="preconnect" href="https://komikcast.li" />
         <body
           className={`${roboto.variable} ${robotoMono.variable} antialiased bg-slate-900 flex-col flex`}
         >

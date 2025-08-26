@@ -1,8 +1,5 @@
-"use client";
-
 import Link from "next/link";
 import React from "react";
-import { Rating, RatingButton } from "@/components/ui/kibo-ui/rating";
 
 import Image from "next/image";
 import { RatingComic } from "../RatingComic";
@@ -14,6 +11,7 @@ export type CardMangaProps = {
   href: string;
   chapter: string;
   rating: string;
+  priority?: boolean;
 };
 
 function CountryFlag({ flag }: { flag: string }) {
@@ -23,7 +21,7 @@ function CountryFlag({ flag }: { flag: string }) {
       alt=""
       width={25}
       height={10}
-      loading="lazy"
+      loading="eager"
       unoptimized
       className="shadow"
     />
@@ -37,6 +35,7 @@ export const CardList = ({
   href,
   chapter,
   rating,
+  priority = false,
 }: CardMangaProps) => {
   const flagMap: Record<string, string> = {
     manga: "jp",
@@ -55,7 +54,9 @@ export const CardList = ({
         <Image
           width={200}
           height={300}
-          loading="lazy"
+          sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, (max-width: 1024px) 25vw, 16vw"
+          loading={priority ? "eager" : "lazy"}
+          priority={priority}
           src={thumbnail}
           alt={title}
           className="w-full h-full object-cover"

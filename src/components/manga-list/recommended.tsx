@@ -28,8 +28,8 @@ export const Recommended = async () => {
           gap-4
         "
       >
-        {recommendedManga.map((manga) => (
-          <CardList key={manga.href} {...manga} />
+        {recommendedManga.map((manga, i) => (
+          <CardList key={manga.href} {...manga} priority={i < 5} />
         ))}
       </div>
     </section>

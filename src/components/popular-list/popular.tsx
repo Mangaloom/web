@@ -14,7 +14,7 @@ export default async function PopularAside() {
 
       <div className="space-y-3">
         {popularManga.map((manga, idx) => (
-          <PopularItem key={idx} rank={idx + 1} {...manga} />
+          <PopularItem key={idx} rank={idx + 1} {...manga} priority={idx < 3} />
         ))}
       </div>
     </aside>
