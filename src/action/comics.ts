@@ -115,3 +115,36 @@ export const getSearchComics = async (query: string) => {
 
   return data.data;
 };
+
+export const getAllComicsForSitemap = async (): Promise<
+  { href: string; updatedAt: string }[]
+> => {
+  let allComics: { href: string; chapter: string }[] = [];
+  let currentPage = 1;
+  let hasMorePages = true;
+
+  do {
+    try {
+      console.log(`Fetching page ${currentPage} for sitemap...`);
+      const pageComics = await getComicList(String(currentPage));
+
+      if (pageComics && pageComics.length > 0) {
+        allComics.push(...pageComics);
+        currentPage++;
+      } else {
+        hasMorePages = false;
+      }
+    } catch (error) {
+      console.error(`Failed to fetch page ${currentPage}:`, error);
+      hasMorePages = false;
+    }
+  } while (hasMorePages);
+
+  console.log(`Total comics fetched for sitemap: ${allComics.length}`);
+
+  return allComics.map((comic) => ({
+    href: comic.href,
+
+    updatedAt: new Date().toISOString(),
+  }));
+};
