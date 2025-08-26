@@ -1,0 +1,150 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+:root {
+  --radius: 0.65rem;
+  --background: oklch(99% 0.002 270); /* putih lembut */
+  --foreground: oklch(20% 0.03 265); /* hitam hampir solid */
+
+  --card: oklch(98% 0.002 270); /* abu tipis */
+  --card-foreground: var(--foreground);
+
+  --popover: var(--card);
+  --popover-foreground: var(--foreground);
+
+  --primary: oklch(62% 0.22 275); /* #6C63FF → ungu vibrant */
+  --primary-foreground: oklch(98% 0.002 270);
+
+  --secondary: oklch(70% 0.21 15); /* #FF6584 → pink merah muda */
+  --secondary-foreground: oklch(99% 0.002 270);
+
+  --accent: oklch(70% 0.18 180); /* teal hijau segar */
+  --accent-foreground: oklch(99% 0.002 270);
+
+  --muted: oklch(95% 0.01 265); /* abu-abu soft */
+  --muted-foreground: oklch(45% 0.03 265);
+
+  --destructive: oklch(60% 0.24 25); /* merah error */
+  --destructive-foreground: oklch(98% 0.002 270);
+
+  --border: oklch(92% 0.01 265);
+  --input: oklch(92% 0.01 265);
+  --ring: var(--primary);
+
+  --success: oklch(65% 0.18 145); /* hijau sukses */
+  --warning: oklch(80% 0.18 85); /* kuning emas */
+
+  --chart-1: var(--primary);
+  --chart-2: var(--secondary);
+  --chart-3: var(--accent);
+  --chart-4: var(--success);
+  --chart-5: var(--warning);
+
+  --sidebar: var(--card);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--secondary);
+  --sidebar-accent-foreground: var(--secondary-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+}
+
+.dark {
+  --background: oklch(17% 0.04 265); /* abu gelap */
+  --foreground: oklch(98% 0.002 270); /* putih terang */
+
+  --card: oklch(23% 0.05 265);
+  --card-foreground: var(--foreground);
+
+  --popover: var(--card);
+  --popover-foreground: var(--foreground);
+
+  --primary: oklch(72% 0.2 275); /* ungu lebih soft di dark mode */
+  --primary-foreground: oklch(15% 0.03 265);
+
+  --secondary: oklch(68% 0.21 15); /* pink tetap tegas */
+  --secondary-foreground: var(--foreground);
+
+  --accent: oklch(65% 0.18 180); /* teal tetap segar */
+  --accent-foreground: var(--foreground);
+
+  --muted: oklch(30% 0.03 265); /* abu gelap */
+  --muted-foreground: oklch(70% 0.04 265);
+
+  --destructive: oklch(55% 0.23 25); /* merah error gelap */
+  --destructive-foreground: var(--foreground);
+
+  --border: oklch(25% 0.02 265);
+  --input: oklch(25% 0.02 265);
+  --ring: var(--primary);
+
+  --success: oklch(65% 0.18 145);
+  --warning: oklch(80% 0.18 85);
+
+  --chart-1: var(--primary);
+  --chart-2: var(--secondary);
+  --chart-3: var(--accent);
+  --chart-4: var(--success);
+  --chart-5: var(--warning);
+
+  --sidebar: var(--card);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--secondary);
+  --sidebar-accent-foreground: var(--secondary-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
