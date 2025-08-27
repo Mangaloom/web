@@ -104,7 +104,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Mangaloom - Baca Komik Manga, Manhwa, Manhua Online",
     description:
-      "Nikmati pengalaman baca komik online terbaik dengan koleksi manga, manhwa, dan manhua terbaru di Mangaloom.",
+      "Mangaloom adalah platform baca komik online terbaik. Koleksi manga, manhwa, dan manhua terbaru lengkap, update setiap hari, gratis dan gausa setres karna iklan XD",
     url: "https://mangaloom.app",
     siteName: "Mangaloom",
     locale: "id_ID",
