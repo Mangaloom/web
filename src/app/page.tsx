@@ -1,13 +1,6 @@
 import NewestComics from "@/components/manga-list/newest";
 import { Recommended } from "@/components/manga-list/recommended";
 import PopularAside from "@/components/popular-list/popular";
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Mangaloom - Terbaru",
-  description:
-    "Update harian manga,manhwa, manhua  gratis dan mudah diakses hanya di https://mangaloom.app",
-};
 
 export default function Home() {
   return (

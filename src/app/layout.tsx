@@ -80,6 +80,20 @@ export const metadata: Metadata = {
     "komik thriller",
     "komik misteri",
   ],
+  icons: {
+    icon: [
+      {
+        url: "/favicon.ico",
+        type: "image/x-icon",
+      },
+      {
+        url: "/icon.png",
+        type: "image/png",
+      },
+    ],
+    apple: "/apple-icon.png",
+    shortcut: "/shortcut-icon.png",
+  },
   authors: [{ name: "Mangaloom Team" }],
   creator: "Mangaloom",
   publisher: "Mangaloom",
@@ -97,7 +111,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "https://mangaloom.app/og-image.png",
+        url: "https://mangaloom.app/icon.png",
         width: 1200,
         height: 630,
         alt: "Mangaloom - Baca Komik Online",
@@ -110,7 +124,7 @@ export const metadata: Metadata = {
     description:
       "Baca manga, manhwa, dan manhua terbaru secara gratis hanya di Mangaloom.",
     creator: "@mangaloom",
-    images: ["https://mangaloom.app/og-image.png"],
+    images: ["https://mangaloom.app/icon.png"],
   },
   robots: {
     index: true,
