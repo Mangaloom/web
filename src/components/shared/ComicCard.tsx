@@ -8,7 +8,6 @@ interface ComicCardProps {
   priority?: boolean;
 }
 
-// Sub-komponen untuk menampilkan bendera, ditempatkan di sini agar praktis
 function CountryFlag({ flag }: { flag: string }) {
   return (
     <Image

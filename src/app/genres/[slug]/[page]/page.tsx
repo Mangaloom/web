@@ -6,29 +6,52 @@ export const runtime = "edge";
 export async function generateMetadata({
   params,
 }: {
-  params: { slug: string; page: string };
+  params: Promise<{ slug: string; page: string }>;
 }): Promise<Metadata> {
-  const genreName = params.slug
+  const { slug, page } = await params;
+  const genreName = slug
     .replace(/-/g, " ")
     .replace(/\b\w/g, (l) => l.toUpperCase());
-  const pageNumber = params.page;
+  const pageNumber = page;
 
   return {
-    title: `Komik Genre ${genreName} - Halaman ${pageNumber} - Mangaloom`,
-    description: `Daftar komik, manga, manhwa, dan manhua dengan genre ${genreName}. Baca sekarang di halaman ${pageNumber}.`,
+    title: `${genreName} Manga, Manhwa & Komik Terbaik - Halaman ${pageNumber} | Mangaloom`,
+    description: `Baca koleksi lengkap komik ${genreName} terbaru dan terpopuler. Ribuan judul manga, manhwa, dan manhua genre ${genreName} gratis. Update harian, kualitas HD, baca online di Mangaloom halaman ${pageNumber}.`,
+    keywords: `${genreName}, manga ${genreName}, manhwa ${genreName}, komik ${genreName}, baca komik online, manga indonesia, manhwa indonesia, komik gratis, manga terbaru`,
+    openGraph: {
+      title: `${genreName} Manga & Manhwa Terbaik - Halaman ${pageNumber}`,
+      description: `Koleksi komik ${genreName} terlengkap. Baca manga, manhwa, dan manhua ${genreName} gratis di Mangaloom.`,
+      type: "website",
+      siteName: "Mangaloom",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${genreName} Manga & Manhwa - Halaman ${pageNumber}`,
+      description: `Baca komik ${genreName} terbaik gratis di Mangaloom. Update harian!`,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
+    },
+    alternates: {
+      canonical: `/genres/${slug}/${page}`,
+    },
   };
 }
-
-// Halaman ini sekarang menjadi Server Component yang sangat sederhana
 const GenreListPage = async ({
   params,
 }: {
-  params: { slug: string; page: string };
+  params: Promise<{ slug: string; page: string }>;
 }) => {
-  const { slug, page } = params;
+  const { slug, page } = await params;
   const pageNumber = parseInt(page, 10);
-
-  // Validasi sederhana tetap di sini, tapi notFound dipindahkan ke client component
   if (isNaN(pageNumber) || pageNumber < 1) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -46,8 +69,6 @@ const GenreListPage = async ({
       <h1 className="text-3xl font-bold my-5">
         Genre: <span className="text-primary">{genreTitle}</span>
       </h1>
-
-      {/* Memanggil Client Component untuk menangani semua logika dinamis */}
       <GenreComicList slug={slug} pageNumber={pageNumber} />
     </div>
   );

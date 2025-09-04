@@ -11,19 +11,17 @@ export const Pagination = ({
   totalPages,
   basePath,
 }: PaginationProps) => {
-  // Jika hanya ada satu halaman atau kurang, jangan tampilkan pagination
   if (totalPages <= 1) {
     return null;
   }
 
   const pageNumbers = [];
-  const maxPagesToShow = 5; // Jumlah halaman yang ditampilkan di sekitar halaman saat ini
+  const maxPagesToShow = 5;
   const halfMaxPages = Math.floor(maxPagesToShow / 2);
 
   let startPage = Math.max(1, currentPage - halfMaxPages);
   let endPage = Math.min(totalPages, currentPage + halfMaxPages);
 
-  // Sesuaikan window jika di awal atau akhir
   if (currentPage - halfMaxPages < 1) {
     endPage = Math.min(totalPages, maxPagesToShow);
   }

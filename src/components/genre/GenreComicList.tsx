@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-// HAPUS: Kita tidak lagi memanggil ini secara langsung
-// import { getComicsByGenre } from "@/action/comics";
 import type { ComicsByGenreResponse } from "@/types";
 import { ComicCard } from "@/components/shared/ComicCard";
 import { Pagination } from "@/components/shared/Pagination";
@@ -29,22 +27,18 @@ export const GenreComicList = ({ slug, pageNumber }: GenreComicListProps) => {
 
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
-          // --- PERUBAHAN UTAMA ADA DI SINI ---
-          // Kita gunakan fetch standar untuk memanggil API route internal kita
           const res = await fetch(`/api/comics/${slug}/${pageNumber}`);
 
           if (!res.ok) {
-            // Jika status response bukan 2xx, lempar error
             throw new Error(`API merespon dengan status ${res.status}`);
           }
 
           const apiResponse: ComicsByGenreResponse = await res.json();
-          // --- AKHIR DARI PERUBAHAN ---
 
           if (apiResponse && apiResponse.data && apiResponse.data.length > 0) {
             setResponse(apiResponse);
             setIsLoading(false);
-            return; // Sukses, hentikan percobaan
+            return;
           }
 
           if (attempt < maxRetries) {
@@ -53,7 +47,6 @@ export const GenreComicList = ({ slug, pageNumber }: GenreComicListProps) => {
             );
             await new Promise((resolve) => setTimeout(resolve, retryDelay));
           } else {
-            // Jika semua percobaan gagal
             throw new Error(
               "Tidak ada data ditemukan setelah beberapa kali percobaan."
             );
