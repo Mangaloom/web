@@ -4,7 +4,7 @@ import { Pagination } from "@/components/shared/Pagination";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 
-// Fungsi untuk generate Metadata dinamis
+export const runtime = "edge";
 export async function generateMetadata({
   params,
 }: {

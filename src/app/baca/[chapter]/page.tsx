@@ -1,7 +1,6 @@
 import { getChapterDetail } from "@/action/comics";
 import ChapterReader from "@/components/ChapterReader";
 import Link from "next/link";
-import { FaBackspace, FaBackward } from "react-icons/fa";
 import {
   IoCaretBackOutline,
   IoCaretForwardOutline,
