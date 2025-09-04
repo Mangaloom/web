@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getComicsByGenre } from "@/action/comics";
+// HAPUS: Kita tidak lagi memanggil ini secara langsung
+// import { getComicsByGenre } from "@/action/comics";
 import type { ComicsByGenreResponse } from "@/types";
 import { ComicCard } from "@/components/shared/ComicCard";
 import { Pagination } from "@/components/shared/Pagination";
@@ -18,40 +19,47 @@ export const GenreComicList = ({ slug, pageNumber }: GenreComicListProps) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Reset state setiap kali slug atau pageNumber berubah
     setIsLoading(true);
     setResponse(null);
     setError(null);
 
     const fetchWithRetry = async () => {
       const maxRetries = 3;
-      const retryDelay = 1000; // 1 detik
+      const retryDelay = 1000;
 
       for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
-          const apiResponse = await getComicsByGenre(slug, pageNumber);
+          // --- PERUBAHAN UTAMA ADA DI SINI ---
+          // Kita gunakan fetch standar untuk memanggil API route internal kita
+          const res = await fetch(`/api/comics/${slug}/${pageNumber}`);
 
-          // Cek jika response valid dan punya data
+          if (!res.ok) {
+            // Jika status response bukan 2xx, lempar error
+            throw new Error(`API merespon dengan status ${res.status}`);
+          }
+
+          const apiResponse: ComicsByGenreResponse = await res.json();
+          // --- AKHIR DARI PERUBAHAN ---
+
           if (apiResponse && apiResponse.data && apiResponse.data.length > 0) {
             setResponse(apiResponse);
             setIsLoading(false);
             return; // Sukses, hentikan percobaan
           }
 
-          // Jika response ada tapi data kosong, dianggap gagal untuk retry
           if (attempt < maxRetries) {
             console.log(
-              `Attempt ${attempt} failed, retrying in ${retryDelay}ms...`
+              `Percobaan ${attempt} gagal, mencoba lagi dalam ${retryDelay}ms...`
             );
             await new Promise((resolve) => setTimeout(resolve, retryDelay));
           } else {
-            // Percobaan terakhir gagal
+            // Jika semua percobaan gagal
             throw new Error(
               "Tidak ada data ditemukan setelah beberapa kali percobaan."
             );
           }
         } catch (err) {
-          console.error(`Error on attempt ${attempt}:`, err);
+          console.error(`Error pada percobaan ${attempt}:`, err);
           if (attempt === maxRetries) {
             setError("Gagal memuat komik. Silakan coba muat ulang halaman.");
             setIsLoading(false);
