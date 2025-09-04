@@ -13,7 +13,7 @@ const navLinks = [
   {
     text: "Genre",
     dataCy: "genre-link",
-    link: "/genre",
+    link: "/genres",
   },
   {
     text: "Favorit",

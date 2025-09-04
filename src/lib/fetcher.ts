@@ -4,9 +4,14 @@ export const API_URL =
 export const fetcher = async <T>(routeApi: string): Promise<T> => {
   const res = await fetch(`${API_URL}${routeApi}`, {
     next: { revalidate: 60 },
+    headers: {
+      "X-API-KEY": process.env.NEXT_PUBLIC_API_KEY || "",
+    },
   });
   if (!res.ok) {
-    throw new Error("Failed to fetch data");
+    const errorMessage = `Failed to fetch data: ${res.status} ${res.statusText}`;
+    console.error(errorMessage);
+    throw new Error(errorMessage);
   }
   return res.json();
 };

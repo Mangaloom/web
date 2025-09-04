@@ -10,6 +10,7 @@ import { MdMenu, MdMenuOpen } from "react-icons/md";
 import { NavLinks } from "./_partials/nav-links";
 import { getSearchComics } from "@/action/comics"; // ⬅️ pakai action search
 import { fetcher } from "@/lib/fetcher";
+import { Loader2 } from "lucide-react";
 
 const pjs = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -117,6 +118,7 @@ export function Navbar() {
         );
         setResults(res.data as ComicSearchResult[]);
       } catch (err) {
+        setResults([]);
         console.error(err);
       } finally {
         setLoading(false);
@@ -193,20 +195,17 @@ export function Navbar() {
             {query && (
               <div className="absolute top-12 left-0 w-full md:w-72 bg-[#1E1E1E] text-white rounded-lg shadow-lg max-h-80 overflow-y-auto z-50">
                 {loading ? (
-                  <div className="p-3 text-sm text-gray-400">Loading...</div>
-                ) : results.length > 0 ? (
+                  <Loader2 className="animate-spin m-3 mx-auto" />
+                ) : results && results.length > 0 ? (
                   results.map((comic) => (
                     <Link
                       key={comic.href}
                       href={`/komik${comic.href}`}
                       className="flex items-center gap-3 p-2 hover:bg-white/10"
-                      onClick={() => setQuery("")} // reset input setelah pilih
+                      onClick={() => setQuery("")}
                     >
                       <Image
-                        src={
-                          comic.thumbnail ||
-                          "https://placehold.co/40x56?text=No+Image"
-                        }
+                        src={comic.thumbnail || "/placeholder.png"}
                         alt={comic.title || "Thumbnail"}
                         width={40}
                         height={56}

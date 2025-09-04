@@ -9,12 +9,6 @@ export default async function NewestComics() {
     <section className="flex-1">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-bold text-white">Pembaharuan Harian</h2>
-        <Link
-          href="/daftar-komik"
-          className="bg-primary text-primary-foreground px-3 py-1 rounded-md hover:opacity-90 transition"
-        >
-          Semua Pembaharuan
-        </Link>
       </div>
 
       <div

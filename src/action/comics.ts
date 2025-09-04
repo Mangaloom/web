@@ -1,79 +1,16 @@
 "use server";
 
 import { fetcher } from "@/lib/fetcher";
-
-interface ComicList {
-  comics: {
-    title: string;
-    href: string;
-    thumbnail: string;
-    rating: string;
-    type: string;
-    chapter: string;
-  }[];
-}
-
-interface RecommenderResponse {
-  data: {
-    title: string;
-    href: string;
-    thumbnail: string;
-    type: string;
-    chapter: string;
-    rating: string;
-  }[];
-}
-
-interface PopularResponse {
-  data: {
-    title: string;
-    href: string;
-    thumbnail: string;
-    year: string;
-    genre: string;
-  }[];
-}
-
-export interface Genre {
-  title: string;
-  href: string;
-}
-
-export interface Chapter {
-  title: string;
-  href: string;
-  date: string;
-}
-
-export interface KomikData {
-  title: string;
-  altTitle: string;
-  thumbnail: string;
-  description: string;
-  status: string;
-  type: string;
-  released: string;
-  author: string;
-  updatedOn: string;
-  rating: string;
-  genre: Genre[];
-  chapter: Chapter[];
-}
-
-export interface KomikResponse {
-  status: number;
-  message: string;
-  data: KomikData;
-}
-
-export interface ChapterDetail {
-  data: {
-    title: string;
-    prev: string;
-    next: string;
-    panel: string[];
-  };
-}
+import {
+  KomikResponse,
+  ChapterDetail,
+  ComicList,
+  PopularResponse,
+  RecommenderResponse,
+  ComicsByGenreResponse,
+  GenreListResponse,
+  Genre,
+} from "@/types";
 
 export const getNewestComics = async () => {
   const data = await fetcher<ComicList>("/comics/newest");
@@ -147,4 +84,29 @@ export const getAllComicsForSitemap = async (): Promise<
 
     updatedAt: new Date().toISOString(),
   }));
+};
+
+export const getAllGenres = async (): Promise<Genre[]> => {
+  try {
+    const response = await fetcher<GenreListResponse>("/genre");
+    return response.data;
+  } catch (error) {
+    console.error("Failed to fetch genres:", error);
+    return [];
+  }
+};
+
+export const getComicsByGenre = async (
+  genre: string,
+  page: number
+): Promise<ComicsByGenreResponse | null> => {
+  try {
+    const response = await fetcher<ComicsByGenreResponse>(
+      `/comic/${genre}/${page}`
+    );
+    return response;
+  } catch (error) {
+    console.error(`Failed to fetch comics for genre ${genre}:`, error);
+    return null;
+  }
 };

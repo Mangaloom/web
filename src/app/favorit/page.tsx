@@ -1,9 +1,13 @@
-import React from "react";
+import { FavoriteList } from "@/components/favorites/FavoriteList";
 
 const FavoritePage = () => {
   return (
-    <div className="flex justify-center items-center w-full h-screen text-white">
-      <p>Stay tuned! This feature is under development.</p>
+    <div className="container mx-auto p-4 text-white min-h-screen">
+      {/* Bagian ini dirender di server */}
+      <h1 className="text-3xl font-bold mb-8 border-l-4 border-primary pl-4">
+        Komik Favoritku
+      </h1>
+      <FavoriteList />
     </div>
   );
 };

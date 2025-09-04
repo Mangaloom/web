@@ -140,6 +140,10 @@
   --sidebar-ring: var(--ring);
 }
 
+#nprogress .spinner {
+  display: none !important;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
