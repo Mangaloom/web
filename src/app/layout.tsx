@@ -123,7 +123,7 @@ export const metadata: Metadata = {
     title: "Mangaloom - Baca Komik Manga, Manhwa, Manhua Online",
     description:
       "Baca manga, manhwa, dan manhua terbaru secara gratis hanya di Mangaloom.",
-    creator: "@mangaloom",
+    creator: "@mangaloomapp",
     images: ["https://mangaloom.app/icon.png"],
   },
   robots: {

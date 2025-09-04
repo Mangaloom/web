@@ -3,9 +3,53 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Daftar Genre Komik | Baca Komik Online",
+  title: "Daftar Genre Komik Lengkap - Manga, Manhwa, Manhua | Mangaloom",
   description:
-    "Jelajahi semua genre komik, manga, manhwa, dan manhua yang tersedia. Temukan genre favoritmu seperti Action, Romance, Isekai, dan lainnya.",
+    "Explore koleksi lengkap genre komik di Mangaloom! Baca manga, manhwa, dan manhua gratis dengan genre Action, Romance, Isekai, Fantasy, Slice of Life, Horror, Comedy, Drama, dan masih banyak lagi. Platform baca komik online terbaik Indonesia.",
+  keywords: [
+    "mangaloom",
+    "baca komik online",
+    "manga gratis",
+    "manhwa indonesia",
+    "manhua terbaru",
+    "genre komik",
+    "action manga",
+    "romance manhwa",
+    "isekai manga",
+    "fantasy komik",
+    "komik online gratis",
+    "webtoon indonesia",
+  ],
+  authors: [{ name: "Mangaloom Team" }],
+  creator: "Mangaloom",
+  publisher: "Mangaloom",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
+  openGraph: {
+    title: "Daftar Genre Komik Lengkap - Manga, Manhwa, Manhua | Mangaloom",
+    description:
+      "Explore koleksi lengkap genre komik di Mangaloom! Baca manga, manhwa, dan manhua gratis dengan berbagai genre menarik.",
+    url: "https://mangaloom.app/genres",
+    siteName: "Mangaloom",
+    type: "website",
+    locale: "id_ID",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Daftar Genre Komik Lengkap | Mangaloom",
+    description:
+      "Explore koleksi lengkap genre komik di Mangaloom! Baca manga, manhwa, dan manhua gratis.",
+    creator: "@mangaloomapp",
+  },
+  alternates: {
+    canonical: "https://mangaloom.app/genres",
+  },
 };
 
 const GenresPage = async () => {
