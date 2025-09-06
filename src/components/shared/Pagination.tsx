@@ -65,34 +65,33 @@ export const Pagination = ({
   };
 
   return (
-    <nav className="flex justify-center items-center space-x-2 mt-8">
-      {/* Tombol Previous */}
+    <nav className="flex flex-wrap justify-center items-center gap-1 sm:gap-2 mt-8 px-2">
       <PageLink page={currentPage - 1} isDisabled={currentPage <= 1}>
-        ‹ Prev
+        <span className="hidden sm:inline">‹ Prev</span>
+        <span className="sm:hidden">‹</span>
       </PageLink>
 
-      {/* Tombol Halaman Pertama & ... */}
       {startPage > 1 && <PageLink page={1}>1</PageLink>}
-      {startPage > 2 && <span className="px-4 py-2 text-gray-400">...</span>}
+      {startPage > 2 && (
+        <span className="px-2 sm:px-4 py-2 text-gray-400 text-sm">...</span>
+      )}
 
-      {/* Nomor Halaman Dinamis */}
       {pageNumbers.map((number) => (
         <PageLink key={number} page={number}>
           {number}
         </PageLink>
       ))}
 
-      {/* Tombol Halaman Terakhir & ... */}
       {endPage < totalPages - 1 && (
-        <span className="px-4 py-2 text-gray-400">...</span>
+        <span className="px-2 sm:px-4 py-2 text-gray-400 text-sm">...</span>
       )}
       {endPage < totalPages && (
         <PageLink page={totalPages}>{totalPages}</PageLink>
       )}
 
-      {/* Tombol Next */}
       <PageLink page={currentPage + 1} isDisabled={currentPage >= totalPages}>
-        Next ›
+        <span className="hidden sm:inline">Next ›</span>
+        <span className="sm:hidden">›</span>
       </PageLink>
     </nav>
   );

@@ -66,9 +66,7 @@ const GenreListPage = async ({
 
   return (
     <div className="container mx-auto p-4 text-white min-h-screen">
-      <h1 className="text-3xl font-bold my-5">
-        Genre: <span className="text-primary">{genreTitle}</span>
-      </h1>
+      <h1 className="text-3xl font-bold my-5 text-primary">{genreTitle}</h1>
       <GenreComicList slug={slug} pageNumber={pageNumber} />
     </div>
   );
