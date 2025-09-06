@@ -30,14 +30,14 @@ export const getPopularComics = async () => {
 };
 
 export const getDetailComic = async (href: string) => {
-  const data = await fetcher<KomikResponse>(`/detail/${href}`);
-
+  const cleanedHref = href.replace(/^\/|\/$/g, ""); // hapus slash di awal & akhir
+  const data = await fetcher<KomikResponse>(`/detail/${cleanedHref}`);
   return data.data;
 };
 
 export const getChapterDetail = async (chapter: string) => {
   const data = await fetcher<ChapterDetail>(`/read/${chapter}`);
-
+  console.log("Fetched chapter detail for:", data.data);
   return data.data;
 };
 
@@ -109,4 +109,55 @@ export const getComicsByGenre = async (
     console.error(`Failed to fetch comics for genre ${genre}:`, error);
     return null;
   }
+};
+
+export const getAllChaptersForSitemap = async (): Promise<
+  { chapterHref: string; updatedAt: string }[]
+> => {
+  let allChapters: { chapterHref: string; updatedAt: string }[] = [];
+  let currentPage = 1;
+  let hasMore = true;
+
+  while (hasMore) {
+    try {
+      const comics = await getComicList(String(currentPage));
+      if (!comics || comics.length === 0) {
+        hasMore = false;
+        break;
+      }
+
+      for (const comic of comics) {
+        try {
+          console.log("🔍 Fetching detail for:", comic.href);
+
+          const detail = await getDetailComic(comic.href);
+
+          if (!detail?.chapter) continue;
+
+          for (const chapter of detail.chapter) {
+            allChapters.push({
+              chapterHref: chapter.href
+                .replace("/chapter/", "")
+                .replace(/\//g, ""),
+              updatedAt: new Date().toISOString(),
+            });
+          }
+        } catch (err) {
+          console.warn(`❌ Comic gagal di-fetch detailnya: ${comic.href}`);
+          continue; // skip yang error
+        }
+      }
+
+      console.log(
+        `✅ Fetched chapters from page ${currentPage}, total chapters: ${allChapters.length}`
+      );
+
+      currentPage++;
+    } catch (err) {
+      console.error(`Gagal fetch chapter list di page ${currentPage}:`, err);
+      hasMore = false;
+    }
+  }
+
+  return allChapters;
 };
