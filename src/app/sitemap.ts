@@ -1,8 +1,10 @@
 import { MetadataRoute } from "next";
 import {
+  getAllChaptersForSitemap,
   getAllComicsForSitemap,
   getAllGenres,
   getComicsByGenre,
+  getDetailComic, // pastikan ini sudah tersedia
 } from "@/action/comics";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -16,12 +18,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 1.0,
     },
     {
-      url: `${siteUrl}/daftar-komik`,
+      url: `${siteUrl}/daftar-komik/1`,
       lastModified: new Date(),
       changeFrequency: "daily",
       priority: 0.8,
     },
-
     {
       url: `${siteUrl}/genres`,
       lastModified: new Date(),
@@ -29,6 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
   ];
+
   const comics = await getAllComicsForSitemap();
   const comicRoutes: MetadataRoute.Sitemap = comics.map((comic) => ({
     url: `${siteUrl}/komik${comic.href}`,
@@ -37,9 +39,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  const genres = await getAllGenres();
+  const chapterData = await getAllChaptersForSitemap();
+  const chapterRoutes: MetadataRoute.Sitemap = chapterData.map((chapter) => ({
+    url: `${siteUrl}/baca/${chapter.chapterHref.replaceAll("/", "")}`,
+    lastModified: new Date(chapter.updatedAt),
+    changeFrequency: "weekly" as const,
+    priority: 0.6,
+  }));
 
-  const genrePagesPromises = genres.map(async (genre) => {
+  const genres = await getAllGenres();
+  const genrePagesPromises = genres.map(async (genre: { href: string }) => {
     const slug = genre.href.replace(/\//g, "");
     if (!slug) return [];
 
@@ -53,15 +62,38 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       pageUrls.push({
         url: `${siteUrl}/genres/${slug}/${i}`,
         lastModified: new Date(),
-        changeFrequency: "daily",
+        changeFrequency: "daily" as const,
         priority: 0.6,
       });
     }
+
     return pageUrls;
   });
 
   const genreRoutesArrays = await Promise.all(genrePagesPromises);
   const genreRoutes = genreRoutesArrays.flat();
 
-  return [...staticRoutes, ...comicRoutes, ...genreRoutes];
+  // ======= Sitemap khusus One Piece (5 chapter terbaru) =======
+  const onePieceSlug = "/one-piece"; // sesuaikan jika href-nya beda
+  const onePieceDetail = await getDetailComic(onePieceSlug);
+  const onePieceChapters = onePieceDetail.chapter.slice(0, 5); // ambil 5 terbaru
+
+  const onePieceSitemap: MetadataRoute.Sitemap = onePieceChapters.map(
+    (chapter) => ({
+      url: `${siteUrl}/baca/${chapter.href
+        .replace("/chapter/", "")
+        .replace(/\//g, "")}`,
+      lastModified: new Date(), // bisa juga parse dari `chapter.date`
+      changeFrequency: "weekly" as const,
+      priority: 0.9,
+    })
+  );
+
+  return [
+    ...staticRoutes,
+    ...comicRoutes,
+    ...chapterRoutes,
+    ...genreRoutes,
+    ...onePieceSitemap, // tempel terakhir
+  ];
 }

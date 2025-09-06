@@ -37,7 +37,7 @@ export const getDetailComic = async (href: string) => {
 
 export const getChapterDetail = async (chapter: string) => {
   const data = await fetcher<ChapterDetail>(`/read/${chapter}`);
-  console.log("Fetched chapter detail for:", data.data);
+
   return data.data;
 };
 
@@ -62,7 +62,6 @@ export const getAllComicsForSitemap = async (): Promise<
 
   do {
     try {
-      console.log(`Fetching page ${currentPage} for sitemap...`);
       const pageComics = await getComicList(String(currentPage));
 
       if (pageComics && pageComics.length > 0) {
@@ -72,12 +71,9 @@ export const getAllComicsForSitemap = async (): Promise<
         hasMorePages = false;
       }
     } catch (error) {
-      console.error(`Failed to fetch page ${currentPage}:`, error);
       hasMorePages = false;
     }
   } while (hasMorePages);
-
-  console.log(`Total comics fetched for sitemap: ${allComics.length}`);
 
   return allComics.map((comic) => ({
     href: comic.href,
@@ -91,7 +87,6 @@ export const getAllGenres = async (): Promise<Genre[]> => {
     const response = await fetcher<GenreListResponse>("/genre");
     return response.data;
   } catch (error) {
-    console.error("Failed to fetch genres:", error);
     return [];
   }
 };
@@ -106,7 +101,6 @@ export const getComicsByGenre = async (
     );
     return response;
   } catch (error) {
-    console.error(`Failed to fetch comics for genre ${genre}:`, error);
     return null;
   }
 };
@@ -128,8 +122,6 @@ export const getAllChaptersForSitemap = async (): Promise<
 
       for (const comic of comics) {
         try {
-          console.log("🔍 Fetching detail for:", comic.href);
-
           const detail = await getDetailComic(comic.href);
 
           if (!detail?.chapter) continue;
@@ -143,18 +135,12 @@ export const getAllChaptersForSitemap = async (): Promise<
             });
           }
         } catch (err) {
-          console.warn(`❌ Comic gagal di-fetch detailnya: ${comic.href}`);
-          continue; // skip yang error
+          continue;
         }
       }
 
-      console.log(
-        `✅ Fetched chapters from page ${currentPage}, total chapters: ${allChapters.length}`
-      );
-
       currentPage++;
     } catch (err) {
-      console.error(`Gagal fetch chapter list di page ${currentPage}:`, err);
       hasMore = false;
     }
   }
