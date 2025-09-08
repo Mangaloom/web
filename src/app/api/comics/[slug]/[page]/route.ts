@@ -4,12 +4,13 @@ export const runtime = "edge";
 
 export async function GET(
   _request: Request,
-  { params }: { params: Promise<{ slug: string; page: string }> }
+  { params }: { params: { slug: string; page: string } }
 ) {
-  const { slug, page } = await params;
+  const { slug, page } = params;
   const pageNumber = parseInt(page, 10);
 
   if (isNaN(pageNumber) || pageNumber < 1 || !slug) {
+    console.error(`Parameter tidak valid: slug=${slug}, page=${page}`);
     return NextResponse.json(
       { error: "Parameter tidak valid" },
       { status: 400 }
@@ -19,6 +20,9 @@ export async function GET(
   try {
     const response = await getComicsByGenre(slug, pageNumber);
     if (!response) {
+      console.error(
+        `Gagal mengambil data untuk genre: ${slug}, halaman: ${page}`
+      );
       throw new Error("Gagal mengambil data dari API eksternal.");
     }
     return NextResponse.json(response);

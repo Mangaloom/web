@@ -3,10 +3,11 @@ export const API_URL =
 
 export const fetcher = async <T>(routeApi: string): Promise<T> => {
   const res = await fetch(`${API_URL}${routeApi}`, {
-    next: { revalidate: 60 },
+    next: { revalidate: 0 },
     headers: {
       "X-API-KEY": process.env.NEXT_PUBLIC_API_KEY || "",
     },
+    cache: "no-store",
   });
   if (!res.ok) {
     const errorMessage = `Failed to fetch data: ${res.status} ${res.statusText}`;
