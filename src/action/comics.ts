@@ -101,10 +101,6 @@ export const getComicsByGenre = async (
     );
     return response;
   } catch (error) {
-    console.error(
-      `[DEBUG] Gagal fetch getComicsByGenre untuk ${genre}/${page}:`,
-      error
-    );
     return null;
   }
 };

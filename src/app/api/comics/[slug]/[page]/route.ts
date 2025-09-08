@@ -1,16 +1,21 @@
-import { getComicsByGenre } from "@/action/comics";
+// src/app/api/comics/[slug]/[page]/route.ts
 import { NextResponse } from "next/server";
+import { getComicsByGenre } from "@/action/comics";
+
 export const runtime = "edge";
 
-export async function GET(
-  _request: Request,
-  { params }: { params: { slug: string; page: string } }
-) {
-  const { slug, page } = params;
-  const pageNumber = parseInt(page, 10);
+type Params = { slug: string; page: string };
+type Ctx = { params: Params } | { params: Promise<Params> };
 
-  if (isNaN(pageNumber) || pageNumber < 1 || !slug) {
-    console.error(`Parameter tidak valid: slug=${slug}, page=${page}`);
+async function resolveParams(p: Params | Promise<Params>): Promise<Params> {
+  return (p as any)?.then ? await (p as Promise<Params>) : (p as Params);
+}
+
+export async function GET(_req: Request, ctx: Ctx) {
+  const { slug, page } = await resolveParams(ctx.params);
+  const pageNumber = Number(page);
+
+  if (!slug || !Number.isFinite(pageNumber) || pageNumber < 1) {
     return NextResponse.json(
       { error: "Parameter tidak valid" },
       { status: 400 }
@@ -19,15 +24,11 @@ export async function GET(
 
   try {
     const response = await getComicsByGenre(slug, pageNumber);
-    if (!response) {
-      console.error(
-        `Gagal mengambil data untuk genre: ${slug}, halaman: ${page}`
-      );
-      throw new Error("Gagal mengambil data dari API eksternal.");
+    if (!response || !Array.isArray(response.data)) {
+      return NextResponse.json({ error: "Gagal ambil data" }, { status: 502 });
     }
-    return NextResponse.json(response);
-  } catch (error) {
-    console.error(`API route error untuk /${slug}/${page}:`, error);
+    return NextResponse.json(response, { status: 200 });
+  } catch {
     return NextResponse.json(
       { error: "Terjadi kesalahan pada server" },
       { status: 500 }
