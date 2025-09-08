@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Roboto, Roboto_Mono } from "next/font/google";
 import "./globals.css";
-import { SWRProvider } from "./swr-provider";
+import { SWRProvider } from "../providers/swr-provider";
 import { Navbar } from "@/components/navbar/navbar";
 import { ClientProvider } from "@/providers/client-provider";
 
