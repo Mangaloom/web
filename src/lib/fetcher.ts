@@ -3,7 +3,6 @@ export const API_URL =
 
 export const fetcher = async <T>(routeApi: string): Promise<T> => {
   const res = await fetch(`${API_URL}${routeApi}`, {
-    next: { revalidate: 60 },
     headers: {
       "X-API-KEY": process.env.NEXT_PUBLIC_API_KEY || "",
     },
