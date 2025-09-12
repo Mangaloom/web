@@ -11,11 +11,9 @@ export const Pagination = ({
   totalPages,
   basePath,
 }: PaginationProps) => {
-  if (totalPages <= 1) {
-    return null;
-  }
+  if (totalPages <= 1) return null;
 
-  const pageNumbers = [];
+  const pageNumbers: number[] = [];
   const maxPagesToShow = 5;
   const halfMaxPages = Math.floor(maxPagesToShow / 2);
 
@@ -66,22 +64,26 @@ export const Pagination = ({
 
   return (
     <nav className="flex flex-wrap justify-center items-center gap-1 sm:gap-2 mt-8 px-2">
+      {/* Prev */}
       <PageLink page={currentPage - 1} isDisabled={currentPage <= 1}>
         <span className="hidden sm:inline">‹ Prev</span>
         <span className="sm:hidden">‹</span>
       </PageLink>
 
+      {/* First page */}
       {startPage > 1 && <PageLink page={1}>1</PageLink>}
       {startPage > 2 && (
         <span className="px-2 sm:px-4 py-2 text-gray-400 text-sm">...</span>
       )}
 
+      {/* Middle pages */}
       {pageNumbers.map((number) => (
         <PageLink key={number} page={number}>
           {number}
         </PageLink>
       ))}
 
+      {/* Last page */}
       {endPage < totalPages - 1 && (
         <span className="px-2 sm:px-4 py-2 text-gray-400 text-sm">...</span>
       )}
@@ -89,6 +91,7 @@ export const Pagination = ({
         <PageLink page={totalPages}>{totalPages}</PageLink>
       )}
 
+      {/* Next */}
       <PageLink page={currentPage + 1} isDisabled={currentPage >= totalPages}>
         <span className="hidden sm:inline">Next ›</span>
         <span className="sm:hidden">›</span>

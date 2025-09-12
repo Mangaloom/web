@@ -15,7 +15,6 @@ export const useFavorites = () => {
         setFavorites(JSON.parse(storedFavorites));
       }
     } catch (error) {
-      console.error("Failed to parse favorites from localStorage", error);
       setFavorites([]);
     } finally {
       setIsLoading(false);

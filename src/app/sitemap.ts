@@ -45,9 +45,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (!slug) return [];
 
     const genreData = await getComicsByGenre(slug, 1);
-    if (!genreData || !genreData.length_page) return [];
+    if (!genreData || !genreData.totalPages) return [];
 
-    const totalPages = genreData.length_page;
+    const totalPages = genreData.totalPages;
     const pageUrls: MetadataRoute.Sitemap = [];
 
     for (let i = 1; i <= totalPages; i++) {
@@ -67,18 +67,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const onePieceSlug = "/one-piece";
   const onePieceDetail = await getDetailComic(onePieceSlug);
-  const onePieceChapters = onePieceDetail.chapter.slice(0, 5);
+  const onePieceChapters = onePieceDetail?.chapter.slice(0, 5);
 
-  const onePieceSitemap: MetadataRoute.Sitemap = onePieceChapters.map(
-    (chapter) => ({
+  const onePieceSitemap: MetadataRoute.Sitemap =
+    onePieceChapters?.map((chapter) => ({
       url: `${siteUrl}/baca/${chapter.href
         .replace("/chapter/", "")
         .replace(/\//g, "")}`,
       lastModified: new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.9,
-    })
-  );
+    })) || [];
 
   return [...staticRoutes, ...comicRoutes, ...genreRoutes, ...onePieceSitemap];
 }

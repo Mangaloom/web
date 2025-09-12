@@ -9,7 +9,6 @@ export const fetcher = async <T>(routeApi: string): Promise<T> => {
   });
   if (!res.ok) {
     const errorMessage = `Failed to fetch data: ${res.status} ${res.statusText}`;
-    console.error(errorMessage);
     throw new Error(errorMessage);
   }
   return res.json();

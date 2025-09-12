@@ -36,16 +36,17 @@ export const GenreComicList = ({ slug, pageNumber }: GenreComicListProps) => {
 
           const apiResponse: ComicsByGenreResponse = await res.json();
 
-          if (apiResponse && apiResponse.data && apiResponse.data.length > 0) {
+          if (
+            apiResponse &&
+            Array.isArray(apiResponse.data) &&
+            apiResponse.data.length > 0
+          ) {
             setResponse(apiResponse);
             setIsLoading(false);
             return;
           }
 
           if (attempt < maxRetries) {
-            console.log(
-              `Percobaan ${attempt} gagal, mencoba lagi dalam ${retryDelay}ms...`
-            );
             await new Promise((resolve) => setTimeout(resolve, retryDelay));
           } else {
             setError(
@@ -54,7 +55,6 @@ export const GenreComicList = ({ slug, pageNumber }: GenreComicListProps) => {
             setIsLoading(false);
           }
         } catch (err) {
-          console.error(`Error pada percobaan ${attempt}:`, err);
           if (attempt === maxRetries) {
             setError(
               "Terjadi kesalahan saat memuat komik. Silakan coba lagi nanti."
@@ -78,7 +78,6 @@ export const GenreComicList = ({ slug, pageNumber }: GenreComicListProps) => {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4">
         <div className="text-center max-w-md">
-          {/* Error Icon */}
           <div className="mx-auto mb-6 w-20 h-20 bg-red-100 rounded-full flex items-center justify-center">
             <svg
               className="w-10 h-10 text-red-500"
@@ -97,7 +96,6 @@ export const GenreComicList = ({ slug, pageNumber }: GenreComicListProps) => {
 
           <p className="text-gray-600 mb-6 leading-relaxed">{error}</p>
 
-          {/* Action Button */}
           <button
             onClick={() => window.location.reload()}
             className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 flex items-center gap-2 mx-auto"
@@ -126,7 +124,6 @@ export const GenreComicList = ({ slug, pageNumber }: GenreComicListProps) => {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4">
         <div className="text-center max-w-md">
-          {/* Empty State Icon */}
           <div className="mx-auto mb-6 w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
             <svg
               className="w-10 h-10 text-gray-400"
@@ -143,7 +140,6 @@ export const GenreComicList = ({ slug, pageNumber }: GenreComicListProps) => {
             </svg>
           </div>
 
-          {/* Empty State Message */}
           <h3 className="text-xl font-semibold text-gray-700 mb-2">
             Komik Tidak Ditemukan
           </h3>
@@ -152,7 +148,6 @@ export const GenreComicList = ({ slug, pageNumber }: GenreComicListProps) => {
             jelajahi genre lainnya!
           </p>
 
-          {/* Back Button */}
           <Link
             href="/genres"
             className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-medium transition-colors duration-200 inline-flex items-center gap-2"
@@ -177,7 +172,7 @@ export const GenreComicList = ({ slug, pageNumber }: GenreComicListProps) => {
     );
   }
 
-  const { data: comics, current_page, length_page } = response;
+  const { data: comics, currentPage, totalPages } = response;
 
   return (
     <>
@@ -187,8 +182,8 @@ export const GenreComicList = ({ slug, pageNumber }: GenreComicListProps) => {
         ))}
       </div>
       <Pagination
-        currentPage={current_page}
-        totalPages={length_page}
+        currentPage={currentPage}
+        totalPages={totalPages}
         basePath={`/genres/${slug}`}
       />
     </>

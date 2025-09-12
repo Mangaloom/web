@@ -1,21 +1,28 @@
 "use client";
 
+import { getSearchComics } from "@/action/comics"; // Pakai action search
+import { fetcher } from "@/lib/fetcher";
 import cntl from "cntl";
+import {
+  Book,
+  BookmarkIcon,
+  Flame,
+  Home,
+  LayoutGrid,
+  ListFilter,
+  Loader2,
+  Search as SearchIcon,
+  X,
+} from "lucide-react";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { MdMenu, MdMenuOpen } from "react-icons/md";
-import { NavLinks } from "./_partials/nav-links";
-import { getSearchComics } from "@/action/comics"; // ⬅️ pakai action search
-import { fetcher } from "@/lib/fetcher";
-import { Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const pjs = Plus_Jakarta_Sans({
   subsets: ["latin"],
 });
-
 interface ComicSearchResult {
   href: string;
   thumbnail: string;
@@ -28,82 +35,19 @@ interface SearchResponse {
   data: ComicSearchResult[];
 }
 
-const styles = {
-  navThinLink: `flex items-center transition-colors p-[2px] rounded-sm`,
-  navSlim: (type: "visible" | "invisible") =>
-    cntl`leading-none transition-all text-[10px] md:text-[11px] lg:text-xs text-[#757575] bg-[#FBFBFB] px-[5vw] md:px-[10vw] lg:px-[15vw] ${
-      type === "visible" ? cntl`` : cntl`invisible`
-    }`,
-  navMain: `${pjs.className}  text-white sm:px-[1em] px-[0.5em] md:px-[8vw] lg:px-[10vw]`,
-  navAll: (type: "fixed" | "hidden") =>
-    cntl`fixed top-0 z-30 flex flex-col w-full font-medium transition-transform shadow-[0_4px_8px_0px_rgba(0,0,0,0.1)] ${
-      type === "fixed"
-        ? cntl`shadow-none`
-        : cntl`-translate-y-9 md:-translate-y-[38px] lg:-translate-y-10`
-    }`,
-  navMobile: (sidebarOpen: boolean) =>
-    cntl`fixed inset-y-0 right-0 z-40 w-screen h-screen bg-slate-900 p-8 flex flex-col gap-[4vh] transform transition-transform duration-300 md:hidden
-  ${sidebarOpen ? "translate-x-0" : "translate-x-full"}`,
-};
+const navLinks = [
+  { href: "/", label: "Beranda", icon: Home },
+  { href: "/daftar-komik/1", label: "Daftar Komik", icon: ListFilter },
+  { href: "/genres", label: "Genre", icon: LayoutGrid },
+  { href: "/favorites", label: "Favorites", icon: BookmarkIcon },
+];
 
-export function Navbar() {
-  const navAll = useRef<HTMLDivElement>(null);
-  const navSlim = useRef<HTMLDivElement>(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const onScroll = useCallback(handleNavbarScroll, [sidebarOpen]);
-
-  function handleNavbarScroll() {
-    const { scrollY } = window;
-    if (!navAll.current || !navSlim.current) return;
-
-    navAll.current.className = styles.navAll("fixed");
-    navSlim.current.className = styles.navSlim("visible");
-
-    if (sidebarOpen) {
-      return (navAll.current.className = styles.navAll("hidden"));
-    }
-    if (scrollY > 100) {
-      navAll.current.className = styles.navAll("hidden");
-      navSlim.current.className = styles.navSlim("invisible");
-    }
-  }
-
-  const isMobile = typeof window !== "undefined" && window.innerWidth <= 767;
-
-  function handleMobileNavigationToggler() {
-    setSidebarOpen((current) => {
-      const bodyClasses = document.body.classList;
-      if (isMobile && !current) {
-        bodyClasses.add("overflow-hidden");
-      } else {
-        bodyClasses.remove("overflow-hidden");
-      }
-      return !current;
-    });
-  }
-  function closeMobileNavbar() {
-    setSidebarOpen(() => {
-      const bodyClasses = document.body.classList;
-      bodyClasses.remove("overflow-hidden");
-      return false;
-    });
-  }
-
-  useEffect(() => {
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [onScroll]);
-
-  const currentPath = usePathname();
-  if (currentPath.startsWith("/admin")) return null;
-
-  // 🔎 State search
+function SearchComponent() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<ComicSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
-  // ⏳ debounce search
   useEffect(() => {
     if (!query.trim()) {
       setResults([]);
@@ -116,142 +60,175 @@ export function Navbar() {
         const res = await fetcher<SearchResponse>(
           `/search?keyword=${encodeURIComponent(query)}`
         );
-        setResults(res.data as ComicSearchResult[]);
+        setResults((res.data as ComicSearchResult[]) || []);
       } catch (err) {
         setResults([]);
-        console.error(err);
       } finally {
         setLoading(false);
       }
-    }, 500); // delay 500ms
+    }, 500);
 
     return () => clearTimeout(timeout);
   }, [query]);
 
   return (
-    <nav
-      className={`w-full z-30 bg-black border-b-4 border-primary ${styles.navMain}`}
-      ref={navAll}
-      data-cy="main-nav"
-      tabIndex={0}
-    >
-      <div className={`lg:px-8 md:px-10`}>
-        <div className="flex items-center px-2 justify-between h-20 mx-auto max-w-7xl">
-          {/* Logo */}
-          <div>
-            <Link
-              href="/"
-              onClick={closeMobileNavbar}
-              className="flex flex-col items-center"
-            >
-              <Image
-                alt="Mangaloom Logo"
-                className="flex items-center pl-[1px] max-w-[12rem] h-20 w-full"
-                src={"/assets/logo/mangaloom-logo.png"}
-                width={400}
-                height={400}
-              />
-            </Link>
-          </div>
-
-          {/* Nav Links */}
-          <div
-            className="items-center hidden md:gap-1 lg:gap-2 md:flex"
-            data-cy="desktop-nav"
-          >
-            <NavLinks
-              closeMobileNavbar={closeMobileNavbar}
-              isMobile={isMobile}
-            />
-          </div>
-
-          {/* 🔎 Search */}
-          <div className="flex items-center gap-2 relative">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Cari manga..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="bg-[#1E1E1E] text-white rounded-full pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-48 md:w-64 lg:w-72"
-              />
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-                stroke="currentColor"
-                className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-                />
-              </svg>
-            </div>
-
-            {/* Dropdown hasil */}
-            {query && (
-              <div className="absolute top-12 left-0 w-full md:w-72 bg-[#1E1E1E] text-white rounded-lg shadow-lg max-h-80 overflow-y-auto z-50">
-                {loading ? (
-                  <Loader2 className="animate-spin m-3 mx-auto" />
-                ) : results && results.length > 0 ? (
-                  results.map((comic) => (
-                    <Link
-                      key={comic.href}
-                      href={`/komik${comic.href}`}
-                      className="flex items-center gap-3 p-2 hover:bg-white/10"
-                      onClick={() => setQuery("")}
-                    >
-                      <Image
-                        src={comic.thumbnail || "/placeholder.png"}
-                        alt={comic.title || "Thumbnail"}
-                        width={40}
-                        height={56}
-                        loading="lazy"
-                        unoptimized
-                        draggable={false}
-                        className="rounded-md object-cover"
-                      />
-
-                      <div>
-                        <p className="text-sm font-medium">{comic.title}</p>
-                        <p className="text-xs text-gray-400">
-                          {comic.type} · {comic.chapter}
-                        </p>
-                      </div>
-                    </Link>
-                  ))
-                ) : (
-                  <div className="p-3 text-sm text-gray-400">
-                    Tidak ada hasil.
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Hamburger */}
-          <button
-            className="flex items-center md:hidden z-50 relative"
-            data-cy="hamburger"
-            title="Buka menu"
-            type="button"
-            onClick={handleMobileNavigationToggler}
-          >
-            {sidebarOpen ? (
-              <MdMenuOpen size={32} className="text-primary " />
-            ) : (
-              <MdMenu size={32} className="text-primary" />
-            )}
-          </button>
-        </div>
+    <div className="relative w-full max-w-xs md:max-w-sm">
+      <div className="relative flex items-center">
+        <SearchIcon
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+          size={20}
+        />
+        <input
+          type="text"
+          placeholder="Cari manga favoritmu..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setTimeout(() => setIsFocused(false), 200)} // delay to allow click on results
+          className="w-full rounded-full bg-[#1E1E1E] py-2 pl-10 pr-4 text-white placeholder-gray-500 transition-all focus:outline-none focus:ring-2 focus:ring-primary"
+        />
       </div>
 
-      <aside className={styles.navMobile(sidebarOpen)} data-cy="mobile-nav">
-        <NavLinks closeMobileNavbar={closeMobileNavbar} isMobile={isMobile} />
-      </aside>
+      {isFocused && query && (
+        <div className="absolute left-0 top-full z-50 mt-2 w-full max-h-80 overflow-y-auto rounded-lg bg-[#1E1E1E] shadow-lg">
+          {loading ? (
+            <div className="flex justify-center p-4">
+              <Loader2 className="animate-spin text-primary" />
+            </div>
+          ) : results.length > 0 ? (
+            results.map((comic) => (
+              <Link
+                key={comic.href}
+                href={`/komik${comic.href}`}
+                className="flex items-center gap-3 p-2 transition-colors hover:bg-white/10"
+                onClick={() => {
+                  setQuery("");
+                  setIsFocused(false);
+                }}
+              >
+                <Image
+                  src={comic.thumbnail || "/placeholder.png"}
+                  alt={comic.title || "Thumbnail"}
+                  width={40}
+                  height={56}
+                  loading="lazy"
+                  unoptimized
+                  className="rounded-md object-cover"
+                />
+                <div>
+                  <p className="line-clamp-1 text-sm font-medium">
+                    {comic.title}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    {comic.type} · {comic.chapter}
+                  </p>
+                </div>
+              </Link>
+            ))
+          ) : (
+            <div className="p-3 text-sm text-center text-gray-400">
+              Tidak ada hasil ditemukan.
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+function DesktopNav() {
+  const pathname = usePathname();
+  return (
+    <div className="hidden items-center gap-4 md:flex">
+      {navLinks.map(({ href, label }) => (
+        <Link
+          key={href}
+          href={href}
+          className={cntl`
+            relative text-sm font-semibold transition-colors
+            ${
+              pathname === href
+                ? "text-primary"
+                : "text-white hover:text-primary/80"
+            }
+            after:absolute after:bottom-[-4px] after:left-0 after:h-[2px] after:w-full after:bg-primary after:scale-x-0 after:transition-transform
+            ${
+              pathname === href ? "after:scale-x-100" : "hover:after:scale-x-50"
+            }
+          `}
+        >
+          {label}
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+function MobileBottomNav() {
+  const pathname = usePathname();
+
+  return (
+    <nav className="fixed bottom-0 left-0 z-40 block w-full border-t border-gray-700 bg-black md:hidden">
+      <div className="flex h-16 items-center justify-around">
+        {navLinks.map(({ href, label, icon: Icon }) => {
+          const isActive =
+            href === "/" ? pathname === href : pathname.startsWith(href);
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={cntl`
+                flex flex-col items-center gap-1 text-xs transition-colors
+                ${isActive ? "text-primary" : "text-gray-400 hover:text-white"}
+              `}
+            >
+              <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+              <span className={isActive ? "font-bold" : "font-medium"}>
+                {label}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
     </nav>
+  );
+}
+
+export function Navbar() {
+  const currentPath = usePathname();
+  if (currentPath.startsWith("/admin")) return null;
+
+  return (
+    <>
+      <header
+        className={`${pjs.className} sticky top-0 z-30 w-full border-b-2 border-primary bg-black`}
+        data-cy="main-nav"
+      >
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          {/* Logo */}
+          <Link href="/" className="flex-shrink-0">
+            <Image
+              alt="Mangaloom Logo"
+              className="h-16 w-auto"
+              src={"/assets/logo/mangaloom-logo.png"}
+              width={160}
+              height={40}
+              priority
+            />
+          </Link>
+
+          {/* Navigasi Desktop */}
+          <div className="hidden flex-1 justify-center md:flex">
+            <DesktopNav />
+          </div>
+
+          {/* Komponen Pencarian */}
+          <div className="flex flex-1 justify-end">
+            <SearchComponent />
+          </div>
+        </div>
+      </header>
+
+      <MobileBottomNav />
+    </>
   );
 }

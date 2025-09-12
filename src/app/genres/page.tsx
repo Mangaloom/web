@@ -53,8 +53,7 @@ export const metadata: Metadata = {
 };
 
 const GenresPage = async () => {
-  const genres = await getAllGenres(); 
-  console.log("Genres on server component : ",genres )
+  const genres = await getAllGenres();
   return (
     <div className="container mx-auto p-4 text-white min-h-screen">
       <h1 className="text-3xl font-bold mb-8 border-l-4 border-primary pl-4">

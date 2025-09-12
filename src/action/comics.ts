@@ -1,3 +1,5 @@
+// src/actions/comics.ts
+
 "use server";
 
 import { fetcher } from "@/lib/fetcher";
@@ -13,73 +15,94 @@ import {
 } from "@/types";
 
 export const getNewestComics = async () => {
-  const data = await fetcher<ComicList>("/comics/newest");
-  return data.comics.slice(0, 12);
+  try {
+    const data = await fetcher<ComicList>("/newest");
+    return data.data;
+  } catch (error) {
+    return [];
+  }
 };
 
 export const getRecommenderComics = async () => {
-  const data = await fetcher<RecommenderResponse>("/recommended");
-
-  return data.data.slice(0, 6);
+  try {
+    const data = await fetcher<RecommenderResponse>("/recommended");
+    return data.data.slice(0, 6);
+  } catch (error) {
+    return [];
+  }
 };
 
 export const getPopularComics = async () => {
-  const data = await fetcher<PopularResponse>("/popular");
-
-  return data.data;
+  try {
+    const data = await fetcher<PopularResponse>("/popular");
+    return data.data;
+  } catch (error) {
+    return [];
+  }
 };
 
 export const getDetailComic = async (href: string) => {
-  const cleanedHref = href.replace(/^\/|\/$/g, ""); // hapus slash di awal & akhir
-  const data = await fetcher<KomikResponse>(`/detail/${cleanedHref}`);
-  return data.data;
+  try {
+    const cleanedHref = href.replace(/^\/|\/$/g, "");
+    const data = await fetcher<KomikResponse>(`/detail/${cleanedHref}`);
+    return data.data;
+  } catch (error) {
+    return null;
+  }
 };
 
 export const getChapterDetail = async (chapter: string) => {
-  const data = await fetcher<ChapterDetail>(`/read/${chapter}`);
-
-  return data.data;
+  try {
+    const data = await fetcher<ChapterDetail>(`/read/${chapter}`);
+    return data.data;
+  } catch (error) {
+    return null;
+  }
 };
 
 export const getComicList = async (page: string) => {
-  const data = await fetcher<ComicList>(`/comics/${page}`);
-
-  return data.comics;
+  try {
+    const data = await fetcher<ComicList>(`/comics/${page}`);
+    return data.data;
+  } catch (error) {
+    return [];
+  }
 };
 
 export const getSearchComics = async (query: string) => {
-  const data = await fetcher<KomikResponse>(`/search?keyword=${query}`);
-
-  return data.data;
+  try {
+    const data = await fetcher<KomikResponse>(`/search?keyword=${query}`);
+    return data.data;
+  } catch (error) {
+    return null;
+  }
 };
 
 export const getAllComicsForSitemap = async (): Promise<
   { href: string; updatedAt: string }[]
 > => {
-  let allComics: { href: string; chapter: string }[] = [];
-  let currentPage = 1;
-  let hasMorePages = true;
+  try {
+    let allComics: { href: string; chapter: string }[] = [];
+    let currentPage = 1;
+    let hasMorePages = true;
 
-  do {
-    try {
+    do {
       const pageComics = await getComicList(String(currentPage));
-
       if (pageComics && pageComics.length > 0) {
         allComics.push(...pageComics);
         currentPage++;
       } else {
         hasMorePages = false;
       }
-    } catch (error) {
-      hasMorePages = false;
-    }
-  } while (hasMorePages);
+    } while (hasMorePages);
 
-  return allComics.map((comic) => ({
-    href: comic.href,
-
-    updatedAt: new Date().toISOString(),
-  }));
+    return allComics.map((comic) => ({
+      href: comic.href,
+      updatedAt: new Date().toISOString(),
+    }));
+  } catch (error) {
+    return [];
+  }
 };
 
 export const getAllGenres = async (): Promise<Genre[]> => {
@@ -108,42 +131,33 @@ export const getComicsByGenre = async (
 export const getAllChaptersForSitemap = async (): Promise<
   { chapterHref: string; updatedAt: string }[]
 > => {
-  let allChapters: { chapterHref: string; updatedAt: string }[] = [];
-  let currentPage = 1;
-  let hasMore = true;
+  try {
+    let allChapters: { chapterHref: string; updatedAt: string }[] = [];
+    let currentPage = 1;
+    let hasMore = true;
 
-  while (hasMore) {
-    try {
+    while (hasMore) {
       const comics = await getComicList(String(currentPage));
       if (!comics || comics.length === 0) {
         hasMore = false;
         break;
       }
-
       for (const comic of comics) {
-        try {
-          const detail = await getDetailComic(comic.href);
-
-          if (!detail?.chapter) continue;
-
-          for (const chapter of detail.chapter) {
-            allChapters.push({
-              chapterHref: chapter.href
-                .replace("/chapter/", "")
-                .replace(/\//g, ""),
-              updatedAt: new Date().toISOString(),
-            });
-          }
-        } catch (err) {
-          continue;
+        const detail = await getDetailComic(comic.href);
+        if (!detail?.chapter) continue;
+        for (const chapter of detail.chapter) {
+          allChapters.push({
+            chapterHref: chapter.href
+              .replace("/chapter/", "")
+              .replace(/\//g, ""),
+            updatedAt: new Date().toISOString(),
+          });
         }
       }
-
       currentPage++;
-    } catch (err) {
-      hasMore = false;
     }
+    return allChapters;
+  } catch (error) {
+    return [];
   }
-
-  return allChapters;
 };

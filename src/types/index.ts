@@ -1,5 +1,5 @@
 export interface ComicList {
-  comics: {
+  data: {
     title: string;
     href: string;
     thumbnail: string;
@@ -96,9 +96,9 @@ export interface ComicByGenre {
 }
 
 export interface ComicsByGenreResponse {
-  current_page: number;
+  currentPage: number;
   data: ComicByGenre[];
-  length_page: number;
+  totalPages: number;
   message: string;
   status: number;
 }

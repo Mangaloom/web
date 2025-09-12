@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { RatingComic } from "../RatingComic"; // Pastikan path import ini benar
+import { RatingComic } from "../RatingComic";
 import type { ComicByGenre } from "@/types";
 
 interface ComicCardProps {
@@ -31,7 +31,8 @@ export const ComicCard = ({ comic, priority = false }: ComicCardProps) => {
     manhua: "cn",
   };
 
-  const flagCode = flagMap[type.toLowerCase()];
+  const normalizedType = type ? type.toLowerCase() : "";
+  const flagCode = flagMap[normalizedType];
 
   return (
     <Link
@@ -48,7 +49,7 @@ export const ComicCard = ({ comic, priority = false }: ComicCardProps) => {
           loading={priority ? "eager" : "lazy"}
           priority={priority}
           src={thumbnail || "/placeholder.png"}
-          alt={title}
+          alt={title || "No title"}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
 
@@ -63,13 +64,13 @@ export const ComicCard = ({ comic, priority = false }: ComicCardProps) => {
       {/* Content */}
       <div className="p-2 flex flex-col">
         <h3 className="text-sm font-bold truncate text-white mt-1 group-hover:text-primary transition-colors">
-          {title}
+          {title || "No title"}
         </h3>
         <div className="flex justify-between items-center mt-1">
-          <p className="text-xs text-slate-300">{type}</p>
-          <span className="text-xs text-slate-300">{chapter}</span>
+          <p className="text-xs text-slate-300">{type || "Unknown"}</p>
+          <span className="text-xs text-slate-300">{chapter || "-"}</span>
         </div>
-        <RatingComic rating={rating} className="mt-2" size={14} />
+        <RatingComic rating={rating || "0"} className="mt-2" size={14} />
       </div>
     </Link>
   );

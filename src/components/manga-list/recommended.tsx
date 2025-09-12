@@ -10,7 +10,7 @@ export const Recommended = async () => {
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-bold text-white">Rekomendasi Untuk Kamu</h2>
         <Link
-          href="/daftar-komik"
+          href="/daftar-komik/1"
           className="bg-primary text-primary-foreground px-3 py-1 rounded-md hover:opacity-90 transition"
         >
           Semua Komik

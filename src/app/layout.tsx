@@ -151,7 +151,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://flagcdn.com" />
         <link rel="preconnect" href="https://komikcast.li" />
         <body
-          className={`${roboto.variable} ${robotoMono.variable} antialiased bg-slate-900 flex-col flex`}
+          className={`${roboto.variable} ${robotoMono.variable} antialiased bg-slate-900 flex-col flex pb-20 md:pb-0 min-h-screen`}
         >
           <ClientProvider />
           <Navbar />

@@ -44,7 +44,7 @@ const ComicList = async ({ params }: { params: Promise<{ page: string }> }) => {
       <div className="container mx-auto px-4 max-w-7xl">
         {/* Header */}
         <div className="my-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-white text-center">
+          <h1 className="text-3xl font-bold mb-8 border-l-4 border-primary text-white pl-4">
             Daftar Komik
           </h1>
         </div>
