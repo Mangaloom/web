@@ -116,7 +116,7 @@ function SearchComponent() {
                   className="rounded-md object-cover"
                 />
                 <div>
-                  <p className="line-clamp-1 text-sm font-medium">
+                  <p className="line-clamp-1 text-gray-100 text-sm font-medium">
                     {comic.title}
                   </p>
                   <p className="text-xs text-gray-400">
