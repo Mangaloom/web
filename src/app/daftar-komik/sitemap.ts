@@ -4,6 +4,8 @@ import { getAllComicsForSitemap } from "@/action/comics";
 import { siteUrl } from "@/app/sitemap";
 import { MetadataRoute } from "next";
 
+export const dynamic = "edge";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const comics = await getAllComicsForSitemap();
@@ -26,5 +28,3 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return [];
   }
 }
-
-export const dynamic = "force-dynamic";
