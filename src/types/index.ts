@@ -102,3 +102,26 @@ export interface ComicsByGenreResponse {
   message: string;
   status: number;
 }
+
+export type FilterParams = {
+  genre?: string;
+  status?: "ongoing" | "completed" | string;
+  type?: "manga" | "manhwa" | "manhua" | string;
+  page?: number;
+};
+
+export type FiltersResponse = {
+  status: number;
+  message: string;
+  totalPages: number;
+  currentPage: number;
+  nextPage?: string | null;
+  data: Array<{
+    title: string;
+    href: string;
+    thumbnail: string;
+    type: string;
+    chapter?: string;
+    rating?: string;
+  }>;
+};

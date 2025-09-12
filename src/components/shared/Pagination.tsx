@@ -4,12 +4,14 @@ interface PaginationProps {
   currentPage: number;
   totalPages: number;
   basePath: string;
+  query?: string;
 }
 
 export const Pagination = ({
   currentPage,
   totalPages,
   basePath,
+  query = "",
 }: PaginationProps) => {
   if (totalPages <= 1) return null;
 
@@ -27,9 +29,9 @@ export const Pagination = ({
     startPage = Math.max(1, totalPages - maxPagesToShow + 1);
   }
 
-  for (let i = startPage; i <= endPage; i++) {
-    pageNumbers.push(i);
-  }
+  for (let i = startPage; i <= endPage; i++) pageNumbers.push(i);
+
+  const hrefOf = (page: number) => `${basePath}/${page}${query}`;
 
   const PageLink = ({
     page,
@@ -50,7 +52,7 @@ export const Pagination = ({
     const isActive = page === currentPage;
     return (
       <Link
-        href={`${basePath}/${page}`}
+        href={hrefOf(page)}
         className={`px-4 py-2 rounded-md transition-colors ${
           isActive
             ? "bg-primary text-white font-bold"
@@ -64,26 +66,22 @@ export const Pagination = ({
 
   return (
     <nav className="flex flex-wrap justify-center items-center gap-1 sm:gap-2 mt-8 px-2">
-      {/* Prev */}
       <PageLink page={currentPage - 1} isDisabled={currentPage <= 1}>
         <span className="hidden sm:inline">‹ Prev</span>
         <span className="sm:hidden">‹</span>
       </PageLink>
 
-      {/* First page */}
       {startPage > 1 && <PageLink page={1}>1</PageLink>}
       {startPage > 2 && (
         <span className="px-2 sm:px-4 py-2 text-gray-400 text-sm">...</span>
       )}
 
-      {/* Middle pages */}
       {pageNumbers.map((number) => (
         <PageLink key={number} page={number}>
           {number}
         </PageLink>
       ))}
 
-      {/* Last page */}
       {endPage < totalPages - 1 && (
         <span className="px-2 sm:px-4 py-2 text-gray-400 text-sm">...</span>
       )}
@@ -91,7 +89,6 @@ export const Pagination = ({
         <PageLink page={totalPages}>{totalPages}</PageLink>
       )}
 
-      {/* Next */}
       <PageLink page={currentPage + 1} isDisabled={currentPage >= totalPages}>
         <span className="hidden sm:inline">Next ›</span>
         <span className="sm:hidden">›</span>

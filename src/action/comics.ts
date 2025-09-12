@@ -12,6 +12,8 @@ import {
   ComicsByGenreResponse,
   GenreListResponse,
   Genre,
+  FilterParams,
+  FiltersResponse,
 } from "@/types";
 
 export const getNewestComics = async () => {
@@ -243,5 +245,56 @@ export const getAllChaptersForSitemap = async (): Promise<
     return allChapters;
   } catch (error) {
     return [];
+  }
+};
+
+export const getComicsByFilters = async (params: FilterParams = {}) => {
+  try {
+    const page =
+      Number.isFinite(params.page) && params.page! > 0 ? params.page! : 1;
+
+    const norm = {
+      status: params.status ? String(params.status).toLowerCase() : undefined,
+      type: params.type ? String(params.type).toLowerCase() : undefined,
+      genre: params.genre
+        ? String(params.genre).toLowerCase().trim()
+        : undefined,
+    } as FilterParams;
+
+    let genreSlug: string | undefined = undefined;
+    if (norm.genre) {
+      const genres = await getAllGenres();
+      const match = genres.find((g: any) => {
+        const slugFromHref =
+          typeof g.href === "string" ? g.href.replace(/\//g, "") : "";
+        const nameLower =
+          typeof g.name === "string" ? g.name.toLowerCase().trim() : "";
+        return slugFromHref === norm.genre || nameLower === norm.genre;
+      });
+      genreSlug = match ? String(match.href).replace(/\//g, "") : norm.genre;
+    }
+
+    const qs = new URLSearchParams();
+    if (genreSlug) qs.set("genre", genreSlug);
+    if (norm.status) qs.set("status", norm.status);
+    if (norm.type) qs.set("type", norm.type);
+    if (page !== 1) qs.set("page", String(page));
+
+    const url = `/filters${qs.toString() ? `?${qs.toString()}` : ""}`;
+    const res = await fetcher<FiltersResponse>(url);
+
+    return {
+      totalPages: res.totalPages ?? 0,
+      currentPage: res.currentPage ?? page,
+      nextPage: res.nextPage ?? null,
+      items: res.data ?? [],
+    };
+  } catch (_e) {
+    return {
+      totalPages: 0,
+      currentPage: 1,
+      nextPage: null,
+      items: [],
+    };
   }
 };
