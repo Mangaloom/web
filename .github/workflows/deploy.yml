@@ -1,0 +1,41 @@
+name: Deploy Mangaloom
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Create .env.production
+        run: |
+          echo "${{ secrets.ENV_FILE }}" > .env.production
+
+      - name: Build Docker image
+        run: |
+          docker build -t mangaloom-prod .
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_KEY }}
+          script: |
+            cd /root/mangaloom || git clone https://github.com/Mangaloom/web.git /root/mangaloom
+            cd /root/mangaloom
+            git pull origin main
+            echo "${{ secrets.ENV_FILE }}" > .env.production
+            docker compose build
+            docker compose up -d
