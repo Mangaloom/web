@@ -33,5 +33,17 @@ jobs:
             cd /root/mangaloom
             docker compose down --remove-orphans
             git pull origin main
+            if ! command -v npm &> /dev/null; then
+              echo "npm is not installed. Please install npm first."
+              exit 1
+            fi
+
+            if ! command -v pnpm &> /dev/null; then
+              echo "pnpm is not installed. Please install pnpm first."
+              exit 1
+            fi
+
+            pnpm install
+            pnpm build
             echo "${{ secrets.ENV_FILE }}" > .env.production
             docker compose --env-file .env.production up -d --build --remove-orphans
