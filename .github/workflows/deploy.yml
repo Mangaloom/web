@@ -22,10 +22,6 @@ jobs:
         run: |
           echo "${{ secrets.ENV_FILE }}" > .env.production
 
-      - name: Build Docker image
-        run: |
-          docker build -t mangaloom-prod .
-
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -35,7 +31,7 @@ jobs:
           script: |
             cd /root/mangaloom || git clone https://github.com/Mangaloom/web.git /root/mangaloom
             cd /root/mangaloom
+            docker compose down --remove-orphans
             git pull origin main
             echo "${{ secrets.ENV_FILE }}" > .env.production
-            docker compose build
-            docker compose up -d
+            docker compose --env-file .env.production up -d --build --remove-orphans
