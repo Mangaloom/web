@@ -18,7 +18,7 @@ import {
 
 export const getNewestComics = async () => {
   try {
-    const data = await fetcher<ComicList>("/newest");
+    const data = await fetcher<ComicList>("/newest?page=1");
     return data.data;
   } catch (error) {
     return [];

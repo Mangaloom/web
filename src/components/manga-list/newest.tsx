@@ -1,6 +1,4 @@
-import Link from "next/link";
-import { Button } from "../ui/button";
-import { CardList, CardMangaProps } from "./card-list";
+import { CardList } from "./card-list";
 import { getNewestComics } from "@/action/comics";
 
 export default async function NewestComics() {
