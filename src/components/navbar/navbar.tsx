@@ -31,10 +31,6 @@ interface ComicSearchResult {
   chapter: string;
 }
 
-interface SearchResponse {
-  data: ComicSearchResult[];
-}
-
 const navLinks = [
   { href: "/", label: "Beranda", icon: Home },
   { href: "/daftar-komik/1", label: "Daftar Komik", icon: ListFilter },
@@ -57,10 +53,11 @@ function SearchComponent() {
     const timeout = setTimeout(async () => {
       setLoading(true);
       try {
-        const res = await fetcher<SearchResponse>(
-          `/search?keyword=${encodeURIComponent(query)}`
+        const res = await fetch(
+          `/api/search?keyword=${encodeURIComponent(query)}`
         );
-        setResults((res.data as ComicSearchResult[]) || []);
+        const data: ComicSearchResult[] = await res.json();
+        setResults(data || []);
       } catch (err) {
         setResults([]);
       } finally {

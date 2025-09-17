@@ -11,7 +11,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const comics = await getAllComicsForSitemap();
 
     if (!comics || comics.length === 0) {
-      console.warn("No comics found for sitemap generation");
       return [];
     }
 
@@ -24,7 +23,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     return comicRoutes;
   } catch (error) {
-    console.error("Error generating sitemap:", error);
     return [];
   }
 }

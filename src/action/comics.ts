@@ -73,10 +73,12 @@ export const getComicList = async (page: string) => {
 
 export const getSearchComics = async (query: string) => {
   try {
-    const data = await fetcher<KomikResponse>(`/search?keyword=${query}`);
+    const data = await fetcher<KomikResponse>(
+      `/search?keyword=${encodeURIComponent(query)}`
+    );
     return data.data;
   } catch (error) {
-    return null;
+    return [];
   }
 };
 
@@ -92,7 +94,6 @@ export const getAllComicsForSitemap = async (): Promise<
     let totalPages = 0;
 
     const fetchPage = async (page: number) => {
-      console.log(`📖 Fetching page ${page}...`);
       const startTime = Date.now();
 
       try {
@@ -100,42 +101,28 @@ export const getAllComicsForSitemap = async (): Promise<
         const duration = Date.now() - startTime;
 
         if (pageComics && pageComics.length > 0) {
-          console.log(
-            `✅ Page ${page} fetched successfully - ${pageComics.length} comics (${duration}ms)`
-          );
           totalFetched += pageComics.length;
           totalPages++;
           return pageComics;
         } else {
-          console.log(`❌ Page ${page} is empty or failed (${duration}ms)`);
           return null;
         }
       } catch (error) {
         const duration = Date.now() - startTime;
-        console.error(`❌ Error fetching page ${page} (${duration}ms):`, error);
         return null;
       }
     };
 
-    console.log("🚀 Starting sitemap generation...");
-
     // Fetch halaman pertama untuk mengetahui ada data atau tidak
     const firstPage = await fetchPage(currentPage);
     if (!firstPage) {
-      console.log("⚠️ No data found on first page, stopping...");
       return [];
     }
 
     allComics.push(...firstPage);
     currentPage++;
 
-    // Fetch beberapa halaman sekaligus dengan batasan concurrency
     while (true) {
-      console.log(
-        `🔄 Fetching batch starting from page ${currentPage} (concurrency: ${concurrencyLimit})`
-      );
-      const batchStartTime = Date.now();
-
       const pagePromises = [];
       for (let i = 0; i < concurrencyLimit; i++) {
         pagePromises.push(fetchPage(currentPage + i));
@@ -143,29 +130,14 @@ export const getAllComicsForSitemap = async (): Promise<
 
       const results = await Promise.all(pagePromises);
       const validResults = results.filter((result) => result !== null);
-      const batchDuration = Date.now() - batchStartTime;
-
-      console.log(
-        `📊 Batch completed: ${validResults.length}/${concurrencyLimit} pages successful (${batchDuration}ms)`
-      );
 
       if (validResults.length === 0) {
-        console.log("🏁 No more data found, stopping fetch process...");
         break;
       }
 
       validResults.forEach((comics) => allComics.push(...comics!));
       currentPage += concurrencyLimit;
-
-      console.log(
-        `📈 Progress: ${totalPages} pages, ${totalFetched} comics total`
-      );
     }
-
-    console.log(
-      `✨ Fetch completed! Total: ${totalPages} pages, ${totalFetched} comics`
-    );
-    console.log("🔄 Converting to sitemap format...");
 
     const result = allComics.map((comic) => ({
       href: comic.href,
@@ -173,20 +145,8 @@ export const getAllComicsForSitemap = async (): Promise<
     }));
 
     const overallDuration = Date.now() - overallStartTime;
-    const minutes = Math.floor(overallDuration / 60000);
-    const seconds = Math.floor((overallDuration % 60000) / 1000);
-    const milliseconds = overallDuration % 1000;
-
-    console.log(
-      `🎉 Sitemap generation completed! ${result.length} entries ready`
-    );
-    console.log(
-      `⏱️ Total execution time: ${minutes}m ${seconds}s ${milliseconds}ms (${overallDuration}ms)`
-    );
-
     return result;
   } catch (error) {
-    console.error("💥 Fatal error in getAllComicsForSitemap:", error);
     return [];
   }
 };
