@@ -29,15 +29,17 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_KEY }}
           script: |
-            mkdir -p /home/mangaloom/web
-            cd /home/mangaloom/web || git clone https://github.com/Mangaloom/web.git /home/mangaloom/web
-            cd /home/mangaloom/web
-            docker compose down --remove-orphans
-            git pull origin main
-            if ! command -v npm &> /dev/null; then
-              echo "npm is not installed. Please install npm first."
-              exit 1
+            if [ ! -d "/home/mangaloom/web/.git" ]; then
+              rm -rf /home/mangaloom/web
+              git clone https://github.com/Mangaloom/web.git /home/mangaloom/web
             fi
+
+            cd /home/mangaloom/web
+            git fetch origin main
+            git checkout main
+            git pull origin main
+
+            docker compose down --remove-orphans
 
             if ! command -v pnpm &> /dev/null; then
               echo "pnpm is not installed. Please install pnpm first."
